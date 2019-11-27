@@ -33,7 +33,7 @@ void mostrarMatriz(char **matriz,int dimension){
     int i, j;
     for(i=0;i<dimension;i++){
         for(j=0;j<dimension;j++){
-            printf("%c",matriz[j][i]);
+            printf("%c",matriz[i][j]);
         }
         printf("\n");
     }
@@ -44,7 +44,7 @@ int **generarListaCoordenadasLibres(char **matriz, int dimension, int *contadorC
     listaCoordenadasLibres=malloc(sizeof(int*)*dimension*dimension);
     for(i=0;i<dimension;i++){
         for(j=0;j<dimension;j++){
-            if(matriz[j][i]=='0'){
+            if(matriz[i][j]=='0'){
                 listaCoordenadasLibres[(*contadorCoordenadasLibres)]=malloc(sizeof(int)*3); 
                 listaCoordenadasLibres[(*contadorCoordenadasLibres)][0]=i;
                 listaCoordenadasLibres[(*contadorCoordenadasLibres)][1]=j;
@@ -60,7 +60,7 @@ void generarParedesRandom(char **matriz, int dimension, int cantObstAleatorios, 
     srand(time(NULL));
     for(i=0;i<cantObstAleatorios;i++){
         random=(rand()%(*contadorCoordenadasLibres));
-        matriz[listaCoordenadasLibres[random][0]][listaCoordenadasLibres[random][1]]='1';
+        matriz[listaCoordenadasLibres[random][1]][listaCoordenadasLibres[random][0]]='1';
         listaCoordenadasLibres[random][0]=listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][0];
         listaCoordenadasLibres[random][1]=listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][1];
         (*contadorCoordenadasLibres)--;
@@ -80,14 +80,14 @@ char **ubicarCaracteres(int dimension, int **obstaculosF, int cantObstAleatorios
 
     // Poscicion inicial y objetivo
     if(esUbicable(matriz,posIni,dimension))
-        matriz[posIni[0]-1][posIni[1]-1]='I';
+        matriz[posIni[1]-1][posIni[0]-1]='I';
     if(esUbicable(matriz,obj,dimension))
-        matriz[obj[0]-1][obj[1]-1]='X';
+        matriz[obj[1]-1][obj[0]-1]='X';
 
     // Obstaculos Fijos
     for(i=0; i<cantObstFijos; i++){
        if(esUbicable(matriz,obstaculosF[i],dimension)){
-            matriz[obstaculosF[i][0]-1][obstaculosF[i][1]-1]='1';
+            matriz[obstaculosF[i][1]-1][obstaculosF[i][0]-1]='1';
         }
     }
     //Obstaculos aleatorios
@@ -133,10 +133,19 @@ void escribirOutput(FILE *fp, char **matriz, int dimensionMatriz){
     }
 }
 
-int main(){
+void ingresoDeArchivos(int argc, char *argv[]){
+    if (argc!=2){
+        printf("Por favor ingrese un archivo de entrada valido");
+        exit(-1);
+    }
+}
+
+int main(int argc, char *argv[]){
     int *dimensionMatriz;
     char **matriz;
     FILE *fp;
+
+    ingresoDeArchivos(argc,argv);
 
     fp = fopen( "example.txt", "r");
     matriz=generarLaberinto(fp,dimensionMatriz);

@@ -1,0 +1,24 @@
+Documentacion
+
+Prongrama: "generadorLaberinto.c"
+
+--Propósito--
+La finalidad de este programa es generar un archivo de texto (EntradaLaberinto.txt) que contiene un laberinto en forma
+de matriz de caracteres,con un punto de inicio, un objetivo, y un grupo de obstaculos. El cuál servira como entradad
+de otro programa.
+
+--Archivo de entrada--
+El programa recibirá un archivo de entrada que contendrá la dimensión del laberinto, obstaculos fijos dados en coordenadas,
+cantidad de obstaculos aleatorios, posición inicial, y objetivo, también dados en coordenadas.
+
+--Modo de uso--
+Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentra el programa
+y el archivo de entrada (en este caso, example.txt):
+En Windows:
+./a.exe example.txt
+En Linux:
+./a.out example.txt
+
+
+
+Spoletini Bruno
