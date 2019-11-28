@@ -4,6 +4,19 @@
 #include <string.h>
 #include <time.h>
 
+/*///////////////////////////
+Consultas:
+Esta bien que pese tanto el archivo
+
+Con dimension 1000 y obst aleatorios 10.000 se rellenan las puntas, y no el centro de la matriz
+
+Segmentation fault con dimension cercana a 7.000 (cuando usas los randoms)
+el error esta en generarListaCoordenadasLibres.
+
+
+segmentation fault con dimension mayor a 20.000 (teniendo los randoms comentados)
+
+///////////////////////////*/
 //Recibe un array de punteros a char, su dimension y libera la memoria asignada a estos
 void liberarMemoriaChar(char **matriz, int dimensionMatriz){
     int i;
@@ -42,99 +55,83 @@ void mostrarMatriz(char **matriz,int dimension){
 }
 //Recibe una matriz de caracteres, su dimension, un puntero a int y devuelve una lista con las coordenadas de la matriz en las
 // que habia un '0'. Tambien modifica el puntero a int, el cual pasa a contener el largo de la lista que a devolver.
-int **generarListaCoordenadasLibres(char **matriz, int dimension, long long *contadorCoordenadasLibres){
+int **generarListaCoordenadasLibres(char **matriz, int dimension, long long *contadorCoordenadasLibres, int casillasOcupadas){
     int i,j,**listaCoordenadasLibres;
-    listaCoordenadasLibres=malloc((sizeof(int*)*dimension*dimension));
+    long long tamanioMax=(dimension*dimension)-casillasOcupadas;
+    listaCoordenadasLibres=(int**)malloc(sizeof(int*)*tamanioMax);
     for(i=0;i<dimension;i++){
         for(j=0;j<dimension;j++){
             if(matriz[i][j]=='0'){
-                listaCoordenadasLibres[(*contadorCoordenadasLibres)]=malloc(sizeof(int)*2); 
-                listaCoordenadasLibres[(*contadorCoordenadasLibres)][0]=i;
-                listaCoordenadasLibres[(*contadorCoordenadasLibres)][1]=j;
+                listaCoordenadasLibres[(*contadorCoordenadasLibres)]=(int*)malloc(sizeof(int)*2); 
+                if(listaCoordenadasLibres[(*contadorCoordenadasLibres)]==NULL){
+                    printf("Se rompe cuando el iterador es igual a: %I64d",(*contadorCoordenadasLibres));
+                }
+
+                listaCoordenadasLibres[(*contadorCoordenadasLibres)][0]=j;
+                listaCoordenadasLibres[(*contadorCoordenadasLibres)][1]=i;
                 (*contadorCoordenadasLibres)++;
             }
-        } 
-        //Tira segmentation fault con dimension cercana o mayor a 10000 
-        // debug printf("linea: %i  (%d,%d)\n",i,listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][0],listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][1]);
+        }
+        //Tira segmentation fault con dimension cercana o mayor a 7000 
+        //printf("linea: %i  (%d,%d)\n",i,listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][0],listaCoordenadasLibres[(*contadorCoordenadasLibres)-1][1]);
     }
     return listaCoordenadasLibres;
 }
 // Coloca '1' en lugares aleatorios libres de la matriz (cantObstAleatorios) veces, siendo cantObstAleatorios un dato ingresado al programa
-void generarParedesRandom(char **matriz, int dimension, int cantObstAleatorios, int **listaCoordenadasLibres, long long contadorCoordenadasLibres){
-    int i,random;
+void generarParedesRandom(char **matriz, int dimension, int cantObstAleatorios, int casillasOcupadas){
+    int i,random,**listaCoordenadasLibres;
+    long long *contadorCoordenadasLibres,cont=0;
+    contadorCoordenadasLibres=&cont;
     srand(time(NULL));
+    listaCoordenadasLibres=generarListaCoordenadasLibres(matriz, dimension, contadorCoordenadasLibres, casillasOcupadas);
+    int contCopy=cont;
     for(i=0;i<cantObstAleatorios;i++){
-        random=(rand()%contadorCoordenadasLibres);
+        random=(rand()%cont);
         matriz[listaCoordenadasLibres[random][1]][listaCoordenadasLibres[random][0]]='1';
-        listaCoordenadasLibres[random][0]=listaCoordenadasLibres[contadorCoordenadasLibres-1][0];
-        listaCoordenadasLibres[random][1]=listaCoordenadasLibres[contadorCoordenadasLibres-1][1];
-        contadorCoordenadasLibres--;
+        listaCoordenadasLibres[random][0]=listaCoordenadasLibres[cont-1][0];
+        listaCoordenadasLibres[random][1]=listaCoordenadasLibres[cont-1][1];
+        cont--;
     }
+    liberarMemoriaInt(listaCoordenadasLibres,contCopy);
 }
 
-
-
-//Recibe los datos necesarios para crear el laberinto y lo devuelve en forma de matriz de caracteres
-char **ubicarCaracteres(int dimension, int **obstaculosF, int cantObstAleatorios, int cantObstFijos, int posIni[],int obj[]){
-    int i, **listaCoordenadasLibres;
-    long long *contadorCoordenadasLibres,cont=0;
-    char **matriz;
-    contadorCoordenadasLibres=&cont;
-
-    //Seteo de la matriz a '0's
-    matriz=malloc(sizeof(char*)*dimension);
+char **crearMatriz(int dimension){
+    int i;
+    char **matriz=malloc(sizeof(char*)*dimension);
     for(i=0;i<dimension;i++){
         matriz[i]=malloc(sizeof(char)*dimension+1);
-        memset(matriz[i],'0',dimension*sizeof(char));
+        memset(matriz[i],'0',(dimension*sizeof(char))+1);
         matriz[i][dimension]='\0';
         }
-
-    // Poscicion inicial y objetivo
-    if(esUbicable(matriz,posIni,dimension))
-        matriz[posIni[1]-1][posIni[0]-1]='I';
-    if(esUbicable(matriz,obj,dimension))
-        matriz[obj[1]-1][obj[0]-1]='X';
-
-    // Obstaculos Fijos
-    for(i=0; i<cantObstFijos; i++){
-       if(esUbicable(matriz,obstaculosF[i],dimension)){
-            matriz[obstaculosF[i][1]-1][obstaculosF[i][0]-1]='1';
-        }
-    }
-    //Obstaculos aleatorios
-    listaCoordenadasLibres=generarListaCoordenadasLibres(matriz, dimension, contadorCoordenadasLibres);
-    generarParedesRandom(matriz, dimension, cantObstAleatorios, listaCoordenadasLibres,*contadorCoordenadasLibres);
-
-    liberarMemoriaInt(listaCoordenadasLibres,*contadorCoordenadasLibres);
     return matriz;
-
 }
+
 //Recibe un puntero al archivo de entrada y un puntero a la direccion de la matriz, parsea los datos del archivo y
 // devuelve el laberinto en forma de matriz de caracteres
 char **generarLaberinto(FILE *fp){
-//void   generarLaberinto(FILE *fp){
-    int dimension, i, **obstaculosF,cantObstFijos=0, cantObstAleatorios,posIni[2],obj[2],maxObstaculos;
-    char buf[10010],**matriz;
+    int dimension, i, cantObstAleatorios,pos[2],casillasOcupadas=2;
+    char buf[1010],**matriz;
     fscanf(fp,"%*s %d %*s %*s",&dimension);
-    maxObstaculos=(dimension*dimension)-2;
-    obstaculosF=malloc(sizeof(int*)*maxObstaculos);
+    matriz=crearMatriz(dimension);
     fscanf(fp, "%s", buf);
-    for(i=0;strcmp(buf,"obstaculos")!=0;i++){ 
-        cantObstFijos++;
-        obstaculosF[i]=malloc(sizeof(int)*2);
-        sscanf(buf, "(%d,%d)",&obstaculosF[i][0],&obstaculosF[i][1]);
+    for(i=0;strcmp(buf,"obstaculos")!=0;i++){
+        sscanf(buf, "(%d,%d)",&pos[0],&pos[1]);
+        if(esUbicable(matriz,pos,dimension)){
+            casillasOcupadas++;
+            matriz[pos[1]-1][pos[0]-1]='1';
+        }
         fscanf(fp, "%s", buf);  
-    }
-    fscanf(fp, "%*s %s", buf); 
-    sscanf(buf,"%d",&cantObstAleatorios);
+    } 
+    fscanf(fp, "%*s %d", &cantObstAleatorios);
 
-    fscanf(fp, "%*s %*s %s" ,buf);
-    sscanf(buf, "(%d,%d)",&posIni[0],&posIni[1]);
-
-    fscanf(fp, "%*s %s", buf);
-    sscanf(buf, "(%d,%d)", &obj[0], &obj[1]);
-    matriz=ubicarCaracteres(dimension, obstaculosF, cantObstAleatorios, cantObstFijos, posIni, obj);
-    liberarMemoriaInt(obstaculosF,cantObstFijos);
+    fscanf(fp, "%*s %*s (%d,%d)" ,&pos[0],&pos[1]);
+    if(esUbicable(matriz,pos,dimension))
+        matriz[pos[1]-1][pos[0]-1]='I';
+    
+    fscanf(fp, "%*s (%d,%d)", &pos[0], &pos[1]);
+    if(esUbicable(matriz,pos,dimension))
+        matriz[pos[1]-1][pos[0]-1]='X';
+    generarParedesRandom(matriz, dimension, cantObstAleatorios, casillasOcupadas);
     return matriz;
 }
 //Recibe un puntero al archivo a escribir, una matriz y su dimension, y escribe en este archivo la matriz de caracteres
@@ -164,7 +161,7 @@ int main(int argc, char *argv[]){
     dimensionMatriz=strlen(matriz[0]);
     fclose(fp);
 
-    fp = fopen("EntradaLaberinto.txt", "w+");
+    fp = fopen("laberinto.txt", "w+");
     escribirOutput(fp, matriz, dimensionMatriz);
     fclose(fp);
 

@@ -1,25 +1,52 @@
-def crearTablero(n):
-    tablero = [None] * n
-    for i in range(n):
-        tablero[i]= [0]*n
-    return tablero
+import subprocess
+import sys
 
-def imprimirTablero(tablero):
-    length=len(tablero)
-    for i in range(length):
-        for j in range(length):
-            print(tablero[i][j], end="")
-        print("")
+def crearLaberinto():
+    response = subprocess.run(["./a.exe", "example.txt"])
+    if(response.returncode!=0):
+        print("La creacion del laberinto fallo, el programa va a cerrarese")
+        sys.exit()
+
+#Hacer pytest
+def leerArchivo(archivo):
+    f = open (archivo,'r')
+    matriz = f.read()
+    f.close()
+    return matriz
+#comentar y hacer testeo
+def obtenerInicio(matriz):
+    dimension=len(matriz[0])
+    inicio=[]
+    for i in range(dimension):
+        for j in range(dimension):
+            if(matriz[i][j]=='I'):
+                inicio.append(i)
+                inicio.append(j)
+    return inicio
+
+def sigPos(matriz, pos):
+    if(matriz[pos[0]][pos[1]]=='X'):
+        return pos
+   # else if(matriz[pos[0]][pos[1]]==):
 
 
-def siguienteNodo(tablero, posicion):
-    #La idea es: comprobar los 4 ejes, si son el objetivo, 1, 0 o fuera de rango, y ejecutar la fun en el menor de esos puntos +1?
+def resolverLaberinto(matriz):
+    inicio=obtenerInicio(matriz)
     
-    #if ()
+    #for i in range(matriz):
 
 def main():
-    n=7
-    tablero=crearTablero(n)
-    imprimirTablero(tablero)
+    #esto esta hardcodeado, cambiar para pasarlo como param al main
+    archivo="laberinto.txt"
+    #########
+
+    crearLaberinto()
+    lista=leerArchivo(archivo)
+    matriz=lista.split()
+    print(matriz)
+    resolverLaberinto(matriz)
+
+
+
 
 main()

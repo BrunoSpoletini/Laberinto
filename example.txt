@@ -1,12 +1,10 @@
 dimension
-9999
+10
 obstaculos fijos
-(1,2)
-(1,3)
-(2,4)
-obstaculos aleatorios
-0
-posicion inicial
 (1,1)
+obstaculos aleatorios
+50
+posicion inicial
+(2,1)
 objetivo
-(5,4)
+(3,1)
