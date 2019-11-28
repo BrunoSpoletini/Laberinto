@@ -20,33 +20,78 @@ def obtenerInicio(matriz):
     for i in range(dimension):
         for j in range(dimension):
             if(matriz[i][j]=='I'):
-                inicio.append(i)
                 inicio.append(j)
+                inicio.append(i)
     return inicio
 
-def sigPos(matriz, pos):
-    if(matriz[pos[0]][pos[1]]=='X'):
-        return pos
-   # else if(matriz[pos[0]][pos[1]]==):
-
+def verificar(matriz, x, y , visitados):
+    dimension=len(matriz[0])
+    if (x<0 or dimension<=x or dimension<=y or y<0):
+        return False
+    return not(matriz[y][x]=='1' or ([x,y] in visitados))
 
 def resolverLaberinto(matriz):
     inicio=obtenerInicio(matriz)
+    flag=True
+    encontrado=False
+    pos=inicio
+    camino=[]
+    visitados=[inicio]
+    queue=[inicio] 
+    while queue:
+        if(matriz[pos[1]][pos[0]]=='X'):
+            encontrado=True
+            camino=queue.copy()
+            camino.append(pos)
+        pos=queue.pop()
+        flag=True
+        if(verificar(matriz,pos[0],pos[1]-1,visitados)):
+            flag=False
+            visitados.append([pos[0],pos[1]-1])
+            queue.append(pos)
+            queue.append([pos[0],pos[1]-1])
+
+        if(flag and verificar(matriz, pos[0]+1,pos[1],visitados)):
+            flag=False
+            visitados.append([pos[0]+1,pos[1]])
+            queue.append(pos)
+            queue.append([pos[0]+1,pos[1]])
+
+        if(flag and verificar(matriz, pos[0],pos[1]+1,visitados)):
+            flag=False
+            visitados.append([pos[0],pos[1]+1])
+            queue.append(pos)
+            queue.append([pos[0],pos[1]+1])
+        
+        if(flag and verificar(matriz, pos[0]-1,pos[1],visitados)):
+            flag=False
+            visitados.append([pos[0]-1,pos[1]])
+            queue.append(pos)
+            queue.append([pos[0]-1,pos[1]])  
+    if(encontrado):
+        return camino
+    else:
+        return [[-1,-1]]
     
-    #for i in range(matriz):
 
 def main():
     #esto esta hardcodeado, cambiar para pasarlo como param al main
     archivo="laberinto.txt"
     #########
-
+    camino=[]
     crearLaberinto()
     lista=leerArchivo(archivo)
     matriz=lista.split()
-    print(matriz)
-    resolverLaberinto(matriz)
-
-
-
+    camino=resolverLaberinto(matriz)
+    
+    while (camino==[[-1,-1]]):
+        crearLaberinto()
+        lista=leerArchivo(archivo)
+        matriz=lista.split()
+        camino=resolverLaberinto(matriz)
+    for pos in camino:
+        pos[0]+=1
+        pos[1]+=1
+    print("camino=",camino)
 
 main()

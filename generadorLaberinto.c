@@ -9,12 +9,11 @@ Consultas:
 Esta bien que pese tanto el archivo
 
 Con dimension 1000 y obst aleatorios 10.000 se rellenan las puntas, y no el centro de la matriz
+(supongo que eso tiene que ver con el max de rand de windows)
 
 Segmentation fault con dimension cercana a 7.000 (cuando usas los randoms)
 el error esta en generarListaCoordenadasLibres.
 
-
-segmentation fault con dimension mayor a 20.000 (teniendo los randoms comentados)
 
 ///////////////////////////*/
 //Recibe un array de punteros a char, su dimension y libera la memoria asignada a estos
@@ -59,6 +58,10 @@ int **generarListaCoordenadasLibres(char **matriz, int dimension, long long *con
     int i,j,**listaCoordenadasLibres;
     long long tamanioMax=(dimension*dimension)-casillasOcupadas;
     listaCoordenadasLibres=(int**)malloc(sizeof(int*)*tamanioMax);
+    if(listaCoordenadasLibres==NULL){
+        printf("No se pudo hacer el malloc de listaCoordenadasLibres");
+        exit(-1);
+    }
     for(i=0;i<dimension;i++){
         for(j=0;j<dimension;j++){
             if(matriz[i][j]=='0'){
@@ -98,8 +101,16 @@ void generarParedesRandom(char **matriz, int dimension, int cantObstAleatorios, 
 char **crearMatriz(int dimension){
     int i;
     char **matriz=malloc(sizeof(char*)*dimension);
+    if(matriz==NULL){
+        printf("No se pudo hacer el malloc de matriz");
+        exit(-1);
+    }
     for(i=0;i<dimension;i++){
         matriz[i]=malloc(sizeof(char)*dimension+1);
+        if(matriz[i]==NULL){
+        printf("No se pudo hacer el malloc de en i");
+        exit(-1);
+    }
         memset(matriz[i],'0',(dimension*sizeof(char))+1);
         matriz[i][dimension]='\0';
         }
