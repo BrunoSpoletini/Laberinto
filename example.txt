@@ -1,10 +1,35 @@
 dimension
-4
+100
 obstaculos fijos
-(3,2)
+(1,2)
 obstaculos aleatorios
-2
+0
 posicion inicial
 (1,1)
 objetivo
-(1,4)
+(100,1)
+
+
+
+for(i=0;strcmp(buf,"obstaculos")!=0;i++){
+        sscanf(buf, "(%d,%d)",&pos[0],&pos[1]);
+        if(esUbicable(matriz,pos,dimension)){
+            casillasOcupadas++;
+            matriz[pos[1]-1][pos[0]-1]='1';
+        }
+        fscanf(fp, "%s", buf);  
+} 
+
+    hay que releer el archivo y poner los obstaculos fijos
+
+
+
+    for(i=0;i<dimension;i++){
+            matriz[i]=malloc(sizeof(char)*dimension+1);
+            if(matriz[i]==NULL){
+                printf("No se pudo hacer el malloc de en i");
+                exit(-1);
+                }
+            memset(matriz[i],fill,(dimension*sizeof(char))+1);
+            matriz[i][dimension]='\0';
+        }

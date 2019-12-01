@@ -4,7 +4,7 @@ import sys
 def crearLaberinto():
     response = subprocess.run(["./a.exe", "example.txt"])
     if(response.returncode!=0):
-        print("La creacion del laberinto fallo, el programa va a cerrarese")
+        print("La creacion del laberinto fallo, el programa va a cerrarse")
         sys.exit()
 
 
@@ -46,7 +46,7 @@ def resolverLaberinto(matriz):
     camino=[]
     visitados=[inicio]
     queue=[inicio] 
-    while queue:
+    while queue and (not encontrado):
         pos=queue[len(queue)-1]
         if(verificar(matriz,pos[0],pos[1]-1,visitados)):
             visitado(visitados, queue, pos[0], pos[1]-1)
@@ -107,7 +107,7 @@ def main():
     matriz=leerArchivo(archivo)
     camino=generarCamino(matriz,archivo)
     imprimirSalida(camino)
-    tests("./testPython/laberinto1.txt")
+    #ests("./testPython/laberinto1.txt")
 
 
 main()
