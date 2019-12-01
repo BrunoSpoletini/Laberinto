@@ -3,11 +3,11 @@ dimension
 obstaculos fijos
 (1,2)
 obstaculos aleatorios
-0
+100
 posicion inicial
 (1,1)
 objetivo
-(100,1)
+(30,40)
 
 
 

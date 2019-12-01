@@ -26,8 +26,7 @@ def obtenerInicio(matriz):
                 inicio.append(i)
     return inicio
 
-def verificar(matriz, x, y , visitados):
-    dimension=len(matriz[0])
+def verificar(matriz, x, y , visitados,dimension):
     if (x<0 or dimension<=x or dimension<=y or y<0):
         return False
     return not(matriz[y][x]=='1' or ([x,y] in visitados))
@@ -37,29 +36,29 @@ def verificar(matriz, x, y , visitados):
 def visitado(visitados, queue, x, y):
     visitados.append([x,y])
     queue.append([x,y])
-    
 def resolverLaberinto(matriz):
     inicio=obtenerInicio(matriz)
-
+    dimension=len(matriz[0])
     encontrado=False
     pos=inicio
     camino=[]
     visitados=[inicio]
     queue=[inicio] 
-    while queue and (not encontrado):
+    while ((not encontrado) and queue):
         pos=queue[len(queue)-1]
-        if(verificar(matriz,pos[0],pos[1]-1,visitados)):
+        #print(pos, matriz[pos[1]][pos[0]], encontrado)
+        if(matriz[pos[1]][pos[0]]=='X'):
+            encontrado=True
+            camino=queue.copy()
+        if(verificar(matriz,pos[0],pos[1]-1,visitados,dimension)):
             visitado(visitados, queue, pos[0], pos[1]-1)
-        elif(verificar(matriz, pos[0]+1,pos[1],visitados)):
+        elif(verificar(matriz, pos[0]+1,pos[1],visitados,dimension)):
             visitado(visitados, queue, pos[0]+1, pos[1])
-        elif(verificar(matriz, pos[0],pos[1]+1,visitados)):
+        elif(verificar(matriz, pos[0],pos[1]+1,visitados,dimension)):
             visitado(visitados, queue, pos[0], pos[1]+1)
-        elif(verificar(matriz, pos[0]-1,pos[1],visitados)):
+        elif(verificar(matriz, pos[0]-1,pos[1],visitados,dimension)):
             visitado(visitados, queue, pos[0]-1, pos[1]) 
         else:
-            if(matriz[pos[1]][pos[0]]=='X'):
-                encontrado=True
-                camino=queue.copy()
             queue.pop()
     if(encontrado):
         return camino
