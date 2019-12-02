@@ -1,13 +1,14 @@
 import subprocess
 import sys
-
+# Ejecuta un programa en c utilizando el segundo y tercer argumento pasado al archivo de python para generar un laberinto.
+# Este nuevo laberinto se guarda en un archivo llamado laberinto.txt
 def crearLaberinto():
     response = subprocess.run([sys.argv[2], sys.argv[3]])
     if(response.returncode!=0):
         print("\nLa creacion del laberinto fallo, el programa va a cerrarse")
         sys.exit()
 
-
+# Recibe un archivo con un laberinto y devuelve una matriz de caracteres con el mismo
 def leerArchivo(archivo):
     f = open (archivo,'r')
     matriz = f.read()
@@ -15,7 +16,7 @@ def leerArchivo(archivo):
     matriz=matriz.split()
     return matriz
 
-
+# Recibe una matriz de caracteres que representa un laberinto y devuelve la posicion del inicio del mismo.
 def obtenerInicio(matriz,objetivo):
     dimension=len(matriz[0])
     inicio=[]
@@ -29,17 +30,20 @@ def obtenerInicio(matriz,objetivo):
                 inicio.append(i)
     return inicio
 
+# Recibe una matriz de caracteres, una posicion, un array de posiciones, y la dimension de la matriz, y devuelve True si la posicion es ubicable en la matriz,
+# o False en caso contrario.
 def verificar(matriz, pos , visitados,dimension):
     if (pos[0]<0 or dimension<=pos[0] or dimension<=pos[1] or pos[1]<0):
         return False
     return not(matriz[pos[1]][pos[0]]=='1' or ([pos[0],pos[1]] in visitados))
 
-#Esta funcion siempre devuelve true, y esta hecha para acotar el codigo repetido
-# pero a la vez lo hace mas confuso, la dejo o la saco?
+# Recibe un array de posiciones visitadas, una queue de posiciones y una posicion, y agrega la posicion a la queue y al array de visitados
 def visitado(visitados, queue,pos):
     visitados.append(pos)
     queue.append(pos)
 
+# Recibe una matriz de caracteres, su dimension, una queue, una lista de elementos visitados, una lista de posiciones, y llama a la funcion visitado
+# en el orden dado por la lista de posiciones
 def visitarNodoEnOrden(matriz,dimension,queue,visitados,listaPos):
     if(verificar(matriz,listaPos[0],visitados,dimension)):
         visitado(visitados, queue, listaPos[0])
@@ -52,8 +56,8 @@ def visitarNodoEnOrden(matriz,dimension,queue,visitados,listaPos):
     else:
         queue.pop()
 
-
-
+# Llama a la funcion visitarNodoEnOrden, pasandole como parametro una lista de posiciones, en orden de prioridad de cual visitar, basado en la 
+# distancia de la posicion en la que se encuentra y el objetivo
 def nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo):
     if(abs(pos[0]-1-objetivo[0]) <= abs(pos[0]+1-objetivo[0])):
         if(abs(pos[1]-1-objetivo[1]) <= abs(pos[1]+1-objetivo[1])):
@@ -66,6 +70,7 @@ def nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo):
         else:
             visitarNodoEnOrden(matriz,dimension,queue,visitados,[[pos[0]+1,pos[1]],[pos[0],pos[1]+1],[pos[0]-1,pos[1]],[pos[0],pos[1]-1]])
 
+# Recibe una matriz de caracteres que representa un laberinto y devuelve el camino desde el inicio al objetivo, o [[-1,-1]] en caso de no encontrarlo
 def resolverLaberinto(matriz):
     objetivo=[]
     inicio=obtenerInicio(matriz,objetivo)
@@ -82,12 +87,13 @@ def resolverLaberinto(matriz):
             camino=queue.copy()
         pos=queue[len(queue)-1]
         nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo)
-        
     if(encontrado):
         return camino
     else:
         return [[-1,-1]]
 
+# Recibe una matriz de caracteres y un archivo, en caso de que el laberinto sea resoluble, devuelve el camino desde el inicio hasta el objetivo,
+# en caso contrario, genera un nuevo laberinto hasta que genere uno resoluble, y devuelve la resolucion de este.
 def generarCamino(matriz,archivo):
     camino=resolverLaberinto(matriz)
     while (camino==[[-1,-1]]):
@@ -96,6 +102,7 @@ def generarCamino(matriz,archivo):
         camino=resolverLaberinto(matriz)
     return camino
 
+# Recibe un array de posiciones y las imprime en un archivo 
 def imprimirSalida(camino):
     f = open ('salida.txt','w+')
     list=[]
@@ -105,10 +112,9 @@ def imprimirSalida(camino):
     f.write(list)
     f.close()
 
-
 def testLeerArchivo(laberinto):
     matriz=leerArchivo(laberinto)
-    assert(matriz == ['I0111', '10001', '00100', 'X0000', '00000'] )
+    assert(matriz == ['I1111', '01001', '01100', 'X1000', '00000'] )
 
 def testObtenerInicio(laberinto):
     matriz=leerArchivo(laberinto)
@@ -116,19 +122,41 @@ def testObtenerInicio(laberinto):
     inicio=obtenerInicio(matriz,objetivo)
     assert (inicio==[0,0])
 
-def tests(laberinto):
-    testLeerArchivo(laberinto)
-    testObtenerInicio(laberinto)
+def testVerificar(laberinto):
+    pos=[-1,0]
+    matriz=leerArchivo(laberinto)
+    dimension=5
+    visitados=[]
+    assert (verificar(matriz, pos, visitados, dimension) == False)
+    pos=[4,4]
+    assert (verificar(matriz, pos, visitados, dimension) == True)
+
+
+def testResolverLaberinto(laberinto1, laberinto2):
+    matriz1=leerArchivo(laberinto1)
+    matriz2=leerArchivo(laberinto2)
+    assert(resolverLaberinto(matriz1)==[[0, 0], [0, 1], [0, 2], [0, 3]])
+    assert(resolverLaberinto(matriz2)==[[-1,-1]])
+
+def testGenerarCamino(laberinto1):
+    matriz=leerArchivo(laberinto1)
+    assert(generarCamino(matriz,laberinto1) == [[0, 0], [0, 1], [0, 2], [0, 3]])
+
+
+def tests(laberinto1, laberinto2):
+    testLeerArchivo(laberinto1)
+    testObtenerInicio(laberinto1)
+    testVerificar(laberinto1)
+    testResolverLaberinto(laberinto1, laberinto2)
+    testGenerarCamino(laberinto1)
 
 def main():
-
     archivoEntrada=sys.argv[1]
     crearLaberinto()
     matriz=leerArchivo(archivoEntrada)
     camino=generarCamino(matriz,archivoEntrada)
     imprimirSalida(camino)
-
-    tests("./testPython/laberinto1.txt")
+    tests("./testPython/laberinto1.txt","./testPython/laberinto2.txt")
 
 main()
 

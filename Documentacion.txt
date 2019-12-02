@@ -26,8 +26,8 @@ Programa: "generadorLaberinto.c"
 Este programa tiene como finalidad resolver un laberinto que se le pasa como parametro, e imprimir el camino realizado en un archivo llamado salida.txt
 
 --Archivo de entrada--
-El programa recibira 3 parametros, un laberinto en forma de matriz de caracteres, un archivo ejecutable y un archivo de entrada. Estos ultimos dos tienen como fin
-crear un nuevo laberinto, en caso de que el ingresado no tenga solicion.
+El programa recibira 3 parametros, un laberinto en forma de matriz de caracteres, un archivo ejecutable y un archivo de entrada para el ejecutable. 
+Estos ultimos dos tienen como fin crear un nuevo laberinto, en caso de que el ingresado no tenga solucion.
 
 --Modo de uso--
 Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentren el resto de los archivos:

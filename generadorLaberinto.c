@@ -90,8 +90,6 @@ void ubicarRandoms(char **matriz, int dimension,int cantObstAleatorios,int matri
 char **generarLaberinto(FILE *fp, int *matrizDeUnos){
     int dimension, i, cantObstAleatorios,pos[2],lugaresOcupados=2;
     char buf[1010],**matriz,obstaculosFijos;
-
-
     // Ingreso de dimension y cantAleatorios
     fscanf(fp,"dimension%*c %d %*s %*s",&dimension);
     fscanf(fp, "%s", buf);
@@ -108,10 +106,8 @@ char **generarLaberinto(FILE *fp, int *matrizDeUnos){
         obstaculosFijos='2';
     }
     matriz=crearMatriz(dimension,cantObstAleatorios,*matrizDeUnos);
-
     // Ingreso de obst fijos, inicio y fin
-    fscanf(fp,"%*s %*d %*s %*s");
-    fscanf(fp, "%s", buf);
+    fscanf(fp,"%*s %*d %*s %*s %s",buf);
     for(i=0;strcmp(buf,"obstaculos")!=0;i++){
         sscanf(buf, "(%d,%d)",&pos[0],&pos[1]);
         if(esUbicable(matriz,pos,dimension,*matrizDeUnos)){
@@ -126,7 +122,6 @@ char **generarLaberinto(FILE *fp, int *matrizDeUnos){
     fscanf(fp, "%*s (%d,%d)", &pos[0], &pos[1]);
     if(esUbicable(matriz,pos,dimension,*matrizDeUnos))
         matriz[pos[1]-1][pos[0]-1]='X';
-
     ubicarRandoms(matriz,dimension,cantObstAleatorios,*matrizDeUnos,lugaresOcupados);
     return matriz;
 }
@@ -164,7 +159,7 @@ int main(int argc, char *argv[]){
     FILE *fp;
     ingresoDeArchivos(argc,argv);
 
-    fp = fopen( "example.txt", "r");
+    fp = fopen( argv[1], "r");
     matriz=generarLaberinto(fp,matrizDeUnos);
     dimensionMatriz=strlen(matriz[0]);
     fclose(fp);
@@ -172,6 +167,5 @@ int main(int argc, char *argv[]){
     fp = fopen("laberinto.txt", "w+");
     escribirOutput(fp, matriz, dimensionMatriz,flag);
     fclose(fp);
-
     liberarMemoriaChar(matriz, dimensionMatriz);
 }
