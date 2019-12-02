@@ -2,9 +2,9 @@ import subprocess
 import sys
 
 def crearLaberinto():
-    response = subprocess.run([sys.argv[2], sys.argv[3]])
+    response = subprocess.run(["./a.exe", "example.txt"])
     if(response.returncode!=0):
-        print("\nLa creacion del laberinto fallo, el programa va a cerrarse")
+        print("La creacion del laberinto fallo, el programa va a cerrarse")
         sys.exit()
 
 
@@ -55,8 +55,10 @@ def visitarNodoEnOrden(matriz,dimension,queue,visitados,listaPos):
 
 
 def nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo):
+    #print(pos)
     if(abs(pos[0]-1-objetivo[0]) <= abs(pos[0]+1-objetivo[0])):
         if(abs(pos[1]-1-objetivo[1]) <= abs(pos[1]+1-objetivo[1])):
+            print((pos[0]-1-objetivo[0]) , (pos[0]+1-objetivo[0]))
             visitarNodoEnOrden(matriz,dimension,queue,visitados,[[pos[0]-1,pos[1]],[pos[0],pos[1]-1],[pos[0]+1,pos[1]],[pos[0],pos[1]+1]])
         else:
             visitarNodoEnOrden(matriz,dimension,queue,visitados,[[pos[0]-1,pos[1]],[pos[0],pos[1]+1],[pos[0]+1,pos[1]],[pos[0],pos[1]-1]])
@@ -66,23 +68,32 @@ def nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo):
         else:
             visitarNodoEnOrden(matriz,dimension,queue,visitados,[[pos[0]+1,pos[1]],[pos[0],pos[1]+1],[pos[0]-1,pos[1]],[pos[0],pos[1]-1]])
 
+    
+
+
+    
 def resolverLaberinto(matriz):
     objetivo=[]
     inicio=obtenerInicio(matriz,objetivo)
     dimension=len(matriz[0])
     encontrado=False
+
     pos=inicio
     camino=[]
     visitados=[inicio]
     queue=[inicio]
-    while queue and (not encontrado):
+
+    while (len(queue)!=0) and (not encontrado):
+        
+        pos=queue[len(queue)-1]
+        nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo)
+        print("len queue ",(len(queue)!=0) and (not encontrado))
         if(matriz[pos[1]][pos[0]]=='X'):
             encontrado=True
             queue.pop()
             camino=queue.copy()
-        pos=queue[len(queue)-1]
-        nodoAVisitar(matriz,dimension,queue,pos,visitados,objetivo)
-        
+        print(queue)
+
     if(encontrado):
         return camino
     else:
@@ -111,24 +122,28 @@ def testLeerArchivo(laberinto):
     assert(matriz == ['I0111', '10001', '00100', 'X0000', '00000'] )
 
 def testObtenerInicio(laberinto):
-    matriz=leerArchivo(laberinto)
+    f=open(laberinto)
     objetivo=[]
-    inicio=obtenerInicio(matriz,objetivo)
-    assert (inicio==[0,0])
+    inicio=obtenerInicio(laberinto,objetivo)
+    f.close()
+    assert inicio,[0, 0]
 
 def tests(laberinto):
     testLeerArchivo(laberinto)
-    testObtenerInicio(laberinto)
+    #testObtenerInicio(laberinto)
 
 def main():
+    #esto esta hardcodeado, cambiar para pasarlo como param al main
+    archivo="laberinto.txt"
+    #########
 
-    archivoEntrada=sys.argv[1]
     crearLaberinto()
-    matriz=leerArchivo(archivoEntrada)
-    camino=generarCamino(matriz,archivoEntrada)
+    matriz=leerArchivo(archivo)
+    camino=generarCamino(matriz,archivo)
     imprimirSalida(camino)
 
-    tests("./testPython/laberinto1.txt")
+    #print(sys.argv[])
+    #print(len(sys.argv[]))
 
 main()
 

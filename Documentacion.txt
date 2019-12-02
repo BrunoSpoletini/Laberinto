@@ -1,11 +1,11 @@
-Documentacion
-
-Prongrama: "generadorLaberinto.c"
-
+Documentacion - By Spoletini Bruno
+================================
+Programa: "generadorLaberinto.c"
+================================
 --Propósito--
-La finalidad de este programa es generar un archivo de texto (EntradaLaberinto.txt) que contiene un laberinto en forma
-de matriz de caracteres,con un punto de inicio, un objetivo, y un grupo de obstaculos. El cuál servira como entradad
-de otro programa.
+La finalidad de este programa es generar un archivo de texto (laberinto.txt) que contiene un laberinto en forma
+de matriz de caracteres, con un punto de inicio, un objetivo, y un grupo de obstaculos. El cuál servira como entrada
+de otro programa en python.
 
 --Archivo de entrada--
 El programa recibirá un archivo de entrada que contendrá la dimensión del laberinto, obstaculos fijos dados en coordenadas,
@@ -19,6 +19,20 @@ En Windows:
 En Linux:
 ./a.out example.txt
 
+================================
+Programa: "generadorLaberinto.c"
+================================
+--Propósito--
+Este programa tiene como finalidad resolver un laberinto que se le pasa como parametro, e imprimir el camino realizado en un archivo llamado salida.txt
 
+--Archivo de entrada--
+El programa recibira 3 parametros, un laberinto en forma de matriz de caracteres, un archivo ejecutable y un archivo de entrada. Estos ultimos dos tienen como fin
+crear un nuevo laberinto, en caso de que el ingresado no tenga solicion.
 
-Spoletini Bruno
+--Modo de uso--
+Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentren el resto de los archivos:
+En Windows:
+python ResolvedorDeLaverintos.py laberinto.txt ./a.exe example.txt
+En Linux:
+python ResolvedorDeLaverintos.py laberinto.txt ./a.out example.txt
+
