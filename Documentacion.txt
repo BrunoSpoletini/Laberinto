@@ -12,12 +12,12 @@ El programa recibirá un archivo de entrada que contendrá la dimensión del lab
 cantidad de obstaculos aleatorios, posición inicial, y objetivo, también dados en coordenadas.
 
 --Modo de uso--
-Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentra el programa
-y el archivo de entrada (en este caso, example.txt):
+Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentra el programa,
+ el archivo de entrada, y el de salida (en este caso, example.txt y laberinto.txt):
 En Windows:
-./a.exe example.txt
+./a.exe example.txt laberinto.txt
 En Linux:
-./a.out example.txt
+./a.out example.txt laberinto.txt
 
 ================================
 Programa: "generadorLaberinto.c"
@@ -32,7 +32,7 @@ Estos ultimos dos tienen como fin crear un nuevo laberinto, en caso de que el in
 --Modo de uso--
 Para ejecutarlo se deberá ingresar la siguiente linea, estando ubicado en el directorio en el que se encuentren el resto de los archivos:
 En Windows:
-python ResolvedorDeLaverintos.py laberinto.txt ./a.exe example.txt
+python ResolvedorDeLaverintos.py ./a.exe example.txt laberinto.txt
 En Linux:
-python ResolvedorDeLaverintos.py laberinto.txt ./a.out example.txt
+python ResolvedorDeLaverintos.py ./a.out example.txt laberinto.txt
 

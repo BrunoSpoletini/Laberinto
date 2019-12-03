@@ -85,6 +85,27 @@ void ubicarRandoms(char **matriz, int dimension,int cantObstAleatorios,int matri
     }
 }
 
+// Lee del archivo ingresado los obstaculos fijos, pos inicial y final, y las ubica en la matriz que recibe como parametro
+void ubicarFijos(char **matriz,int dimension, FILE *fp,int *matrizDeUnos, char obstaculosFijos,int *lugaresOcupados){
+    int pos[2],i;
+    char buf[1010];
+    fscanf(fp,"%*s %*d %*s %*s %s",buf);
+    for(i=0;strcmp(buf,"obstaculos")!=0;i++){
+        sscanf(buf, "(%d,%d)",&pos[0],&pos[1]);
+        if(esUbicable(matriz,pos,dimension,*matrizDeUnos)){
+            matriz[pos[1]-1][pos[0]-1]=obstaculosFijos;
+            (*lugaresOcupados)++;
+        }
+        fscanf(fp, "%s", buf);  
+    }
+    fscanf(fp, "%*s %*d posicion inicial (%d,%d)" ,&pos[0],&pos[1]);
+    if(esUbicable(matriz,pos,dimension,*matrizDeUnos))
+        matriz[pos[1]-1][pos[0]-1]='I';
+    fscanf(fp, "%*s (%d,%d)", &pos[0], &pos[1]);
+    if(esUbicable(matriz,pos,dimension,*matrizDeUnos))
+        matriz[pos[1]-1][pos[0]-1]='X';
+}
+
 //Recibe un puntero al archivo de entrada y un puntero a la direccion del array de caracteres,
 // parsea los datos del archivo y devuelve el laberinto en forma de matriz de caracteres
 char **generarLaberinto(FILE *fp, int *matrizDeUnos){
@@ -106,25 +127,11 @@ char **generarLaberinto(FILE *fp, int *matrizDeUnos){
         obstaculosFijos='2';
     }
     matriz=crearMatriz(dimension,cantObstAleatorios,*matrizDeUnos);
-    // Ingreso de obst fijos, inicio y fin
-    fscanf(fp,"%*s %*d %*s %*s %s",buf);
-    for(i=0;strcmp(buf,"obstaculos")!=0;i++){
-        sscanf(buf, "(%d,%d)",&pos[0],&pos[1]);
-        if(esUbicable(matriz,pos,dimension,*matrizDeUnos)){
-            matriz[pos[1]-1][pos[0]-1]=obstaculosFijos;
-            lugaresOcupados++;
-        }
-        fscanf(fp, "%s", buf);  
-    }
-    fscanf(fp, "%*s %*d posicion inicial (%d,%d)" ,&pos[0],&pos[1]);
-    if(esUbicable(matriz,pos,dimension,*matrizDeUnos))
-        matriz[pos[1]-1][pos[0]-1]='I';
-    fscanf(fp, "%*s (%d,%d)", &pos[0], &pos[1]);
-    if(esUbicable(matriz,pos,dimension,*matrizDeUnos))
-        matriz[pos[1]-1][pos[0]-1]='X';
+    ubicarFijos(matriz, dimension, fp, matrizDeUnos, obstaculosFijos, &lugaresOcupados);
     ubicarRandoms(matriz,dimension,cantObstAleatorios,*matrizDeUnos,lugaresOcupados);
     return matriz;
 }
+
 //Recibe un puntero al archivo a escribir, un array de punteros a char y su dimension, y escribe en este archivo la el contenido del array
 void escribirOutput(FILE *fp, char **matriz, int dimensionMatriz, int matrizDeUnos){
     int i,j;
@@ -144,10 +151,11 @@ void escribirOutput(FILE *fp, char **matriz, int dimensionMatriz, int matrizDeUn
         }
     }
 }
+
 //Recibe los argumentos del main y devuelve un msje de error si no se le pasa el archivo de entrada al programa
 void ingresoDeArchivos(int argc, char *argv[]){
-    if (argc!=2){
-        printf("Por favor ingrese un archivo de entrada valido");
+    if(argc!=3){
+        printf("Por favor ingrese los archivos de entrada validos");
         exit(-1);
     }
 }
@@ -158,14 +166,15 @@ int main(int argc, char *argv[]){
     matrizDeUnos=&flag;
     FILE *fp;
     ingresoDeArchivos(argc,argv);
-
+    
     fp = fopen( argv[1], "r");
     matriz=generarLaberinto(fp,matrizDeUnos);
     dimensionMatriz=strlen(matriz[0]);
     fclose(fp);
     
-    fp = fopen("laberinto.txt", "w+");
+    fp = fopen(argv[2], "w+");
     escribirOutput(fp, matriz, dimensionMatriz,flag);
     fclose(fp);
+
     liberarMemoriaChar(matriz, dimensionMatriz);
 }
