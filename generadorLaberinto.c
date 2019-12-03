@@ -109,7 +109,7 @@ void ubicarFijos(char **matriz,int dimension, FILE *fp,int *matrizDeUnos, char o
 //Recibe un puntero al archivo de entrada y un puntero a la direccion del array de caracteres,
 // parsea los datos del archivo y devuelve el laberinto en forma de matriz de caracteres
 char **generarLaberinto(FILE *fp, int *matrizDeUnos){
-    int dimension, i, cantObstAleatorios,pos[2],lugaresOcupados=2;
+    int dimension, i, cantObstAleatorios,lugaresOcupados=2;
     char buf[1010],**matriz,obstaculosFijos;
     // Ingreso de dimension y cantAleatorios
     fscanf(fp,"dimension%*c %d %*s %*s",&dimension);
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]){
     FILE *fp;
     ingresoDeArchivos(argc,argv);
     
-    fp = fopen( argv[1], "r");
+    fp = fopen(argv[1], "r");
     matriz=generarLaberinto(fp,matrizDeUnos);
     dimensionMatriz=strlen(matriz[0]);
     fclose(fp);

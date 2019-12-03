@@ -4,7 +4,7 @@ obstaculos fijos
 (1,2)
 (2,2)
 obstaculos aleatorios
-0
+1
 posicion inicial
 (1,1)
 objetivo
